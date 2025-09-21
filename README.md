@@ -149,7 +149,7 @@
 
 #### 1️⃣ **Clone the Repository**
 ```bash
-git clone https://github.com/yourusername/financial-hub.git
+git clone https://github.com/intronep666/financial-hub.git
 cd financial-hub
 ```
 
