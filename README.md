@@ -149,8 +149,8 @@
 
 #### 1️⃣ **Clone the Repository**
 ```bash
-git clone https://github.com/intronep666/financial-hub.git
-cd financial-hub
+git clone https://github.com/intronep666/Financial-Hub.git
+cd Financial-Hub
 ```
 
 #### 2️⃣ **Backend Setup** 🐍
