@@ -1,6 +1,8 @@
 #!/usr/bin/env bash
 set -euo pipefail
 cd "$(dirname "$0")/backend"
+export USE_SQLITE=true
+export SKIP_DB_INIT=true
 export REDIS_URL=redis://localhost:6379/0
 export CELERY_BROKER_URL=${REDIS_URL}
 export CELERY_RESULT_BACKEND=redis://localhost:6379/1
