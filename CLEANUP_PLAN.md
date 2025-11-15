@@ -127,13 +127,44 @@ All files listed in PROJECT_SUMMARY.md as essential were preserved:
 - ✅ `README.md` and `PROJECT_SUMMARY.md` (Documentation)
 - ✅ Cross-platform start/stop scripts (recently added in verify/infra-rollout)
 
+## Additional Cleanup: Script Organization
+
+### Script Reorganization (69ad868, 11b86b8)
+- **Moved all start/stop scripts** from root directory to `scripts/dev/` subdirectory
+- **Removed redundant .bat files:** `start-backend.bat`, `start-celery.bat`, `start-frontend.bat`, `stop-all.bat`
+- **Fixed all script paths** to work correctly from new location
+- **Created simple launchers:** `dev.sh` and `dev.bat` in root directory for easy access
+- **Added documentation:** Comprehensive `scripts/README.md` explaining the new structure
+
+### New Usage Pattern
+**Root directory launchers (recommended):**
+```bash
+# Windows
+dev.bat start          # Start all services
+dev.bat backend         # Backend only
+dev.bat frontend        # Frontend only
+dev.bat stop            # Stop all services
+
+# Linux/macOS  
+./dev.sh start          # Start all services
+./dev.sh backend        # Backend only
+./dev.sh stop           # Stop all services
+```
+
+**Direct script access:**
+```bash
+./scripts/dev/start-all.sh
+./scripts/dev/start-dev.ps1
+# etc.
+```
+
 ## Impact Assessment
 
 - **Functionality:** ✅ No regression - all core features preserved
 - **Build Process:** ✅ No impact - backend tests pass, frontend builds successfully
-- **Development Workflow:** ✅ Improved - .gitignore prevents future accidental commits of virtual environments
-- **Repository Size:** ✅ Reduced - removed committed virtual environment files
-- **Team Onboarding:** ✅ Cleaner - fewer confusing legacy files for new developers
+- **Development Workflow:** ✅ Improved - cleaner root directory, better script organization
+- **Repository Size:** ✅ Reduced - removed committed virtual environment files and redundant scripts
+- **Team Onboarding:** ✅ Much cleaner - organized scripts, simple launchers, clear documentation
 
 ---
 
