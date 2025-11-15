@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # Start the backend dev server using the repo venv and useful dev defaults
 set -euo pipefail
-cd "$(dirname "$0")/backend"
+cd "$(dirname "$0")/../../backend"
 # Development environment variables
 export USE_SQLITE=${USE_SQLITE:-true}
 export DEBUG=${DEBUG:-true}

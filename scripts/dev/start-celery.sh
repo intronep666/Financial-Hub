@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 set -euo pipefail
-cd "$(dirname "$0")/backend"
+cd "$(dirname "$0")/../../backend"
 export USE_SQLITE=${USE_SQLITE:-true}
 export SKIP_DB_INIT=${SKIP_DB_INIT:-true}
 export REDIS_URL=${REDIS_URL:-redis://localhost:6379/0}

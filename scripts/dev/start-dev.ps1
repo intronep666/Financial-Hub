@@ -1,6 +1,6 @@
 Param()
 Set-StrictMode -Version Latest
-Push-Location $PSScriptRoot\backend
+Push-Location $PSScriptRoot\..\..\backend
 # Development environment variables
 $env:USE_SQLITE = $env:USE_SQLITE -or 'true'
 $env:DEBUG = $env:DEBUG -or 'true'
