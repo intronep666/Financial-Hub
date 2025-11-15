@@ -1,8 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import axios from 'axios';
-
-const API_URL = process.env.REACT_APP_API_URL || 'http://localhost:8000';
-axios.defaults.withCredentials = true;
+import api from '../api';
 
 // Category icons for budgets
 const categoryIcons = {
@@ -28,7 +25,7 @@ const Budgets = () => {
             
             try {
                 // Fetch categories
-                const categoriesRes = await axios.get(`${API_URL}/categories`);
+                const categoriesRes = await api.get('/categories');
                 console.log('Categories fetched:', categoriesRes.data);
                 setCategories(categoriesRes.data);
                 if (categoriesRes.data.length > 0) {
@@ -38,7 +35,7 @@ const Budgets = () => {
                 // Fetch budgets for current month
                 const month = new Date().getMonth() + 1;
                 const year = new Date().getFullYear();
-                const budgetsRes = await axios.get(`${API_URL}/goals/budgets?month=${month}&year=${year}`);
+                const budgetsRes = await api.get('/goals/budgets', { params: { month, year } });
                 console.log('Budgets fetched:', budgetsRes.data);
                 setBudgets(budgetsRes.data);
             } catch (error) {
@@ -78,10 +75,10 @@ const Budgets = () => {
             };
 
             console.log('Submitting budget:', budgetData);
-            const response = await axios.post(`${API_URL}/goals/budgets`, budgetData);
+            const response = await api.post('/goals/budgets', budgetData);
             console.log('Budget created:', response.data);
             
-            setBudgets([response.data, ...budgets]);
+            setBudgets((prev) => [response.data, ...prev]);
             setForm({ category_id: categories[0]?.id || '', amount: '', month: new Date().getMonth() + 1, year: new Date().getFullYear() });
 
             // Haptic feedback

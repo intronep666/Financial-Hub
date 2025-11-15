@@ -1,10 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import axios from 'axios';
-
-const API_URL = process.env.REACT_APP_API_URL || 'http://localhost:8000';
-
-// Configure axios to send cookies with requests
-axios.defaults.withCredentials = true;
+import api from '../api';
 
 const Loans = () => {
     const [loans, setLoans] = useState([]);
@@ -23,7 +18,7 @@ const Loans = () => {
             await new Promise(resolve => setTimeout(resolve, 300));
             
             try {
-                const response = await axios.get(`${API_URL}/loans`);
+                const response = await api.get('/loans');
                 console.log('Loans fetched:', response.data);
                 setLoans(response.data);
             } catch (error) {
@@ -83,10 +78,10 @@ const Loans = () => {
             };
 
             console.log('[REQUEST] Sending loan data:', loanData);
-            const response = await axios.post(`${API_URL}/loans`, loanData);
+            const response = await api.post('/loans', loanData);
             console.log('[SUCCESS] Loan created:', response.data);
             
-            setLoans([response.data, ...loans]);
+            setLoans((prev) => [response.data, ...prev]);
             // Reset form
             setForm({ name: '', amount: '', paid: '0', type: 'borrowed', date_taken: new Date().toISOString().slice(0, 10), source: '' });
             

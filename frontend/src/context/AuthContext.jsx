@@ -1,10 +1,5 @@
 import React, { createContext, useState, useContext, useEffect } from 'react';
-import axios from 'axios';
-
-const API_URL = process.env.REACT_APP_API_URL || 'http://localhost:8000';
-
-// Configure axios to send cookies with requests
-axios.defaults.withCredentials = true;
+import api from '../api';
 
 const AuthContext = createContext(null);
 
@@ -23,7 +18,7 @@ export const AuthProvider = ({ children }) => {
 
     const checkAuth = async () => {
         try {
-            const response = await axios.get(`${API_URL}/auth/me`);
+            const response = await api.get('/auth/me');
             setUser(response.data);
             setIsAuthenticated(true);
             return true;
@@ -43,8 +38,8 @@ export const AuthProvider = ({ children }) => {
             formData.append('username', username);
             formData.append('password', password);
 
-            await axios.post(
-                `${API_URL}/auth/token`,
+            await api.post(
+                '/auth/token',
                 formData,
                 {
                     headers: {
@@ -68,7 +63,7 @@ export const AuthProvider = ({ children }) => {
 
     const register = async (username, password, email) => {
         try {
-            await axios.post(`${API_URL}/auth/register`, {
+            await api.post('/auth/register', {
                 username,
                 password,
                 email
@@ -96,7 +91,7 @@ export const AuthProvider = ({ children }) => {
 
     const logout = async () => {
         try {
-            await axios.post(`${API_URL}/auth/logout`);
+            await api.post('/auth/logout');
         } catch (error) {
             console.warn('Logout request failed:', error);
         } finally {
@@ -113,7 +108,7 @@ export const AuthProvider = ({ children }) => {
     // Axios interceptor for handling 401 errors
     useEffect(() => {
         // BUG FIX #12: Create unique interceptor ID to properly track
-        const responseInterceptor = axios.interceptors.response.use(
+        const responseInterceptor = api.interceptors.response.use(
             (response) => response,
             (error) => {
                 if (error.response?.status === 401) {
@@ -127,7 +122,7 @@ export const AuthProvider = ({ children }) => {
 
         // Properly clean up interceptor on unmount
         return () => {
-            axios.interceptors.response.eject(responseInterceptor);
+            api.interceptors.response.eject(responseInterceptor);
         };
     }, []);
 

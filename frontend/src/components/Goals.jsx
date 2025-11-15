@@ -1,8 +1,5 @@
 import React, { useState, useEffect, useMemo } from 'react';
-import axios from 'axios';
-
-const API_URL = process.env.REACT_APP_API_URL || 'http://localhost:8000';
-axios.defaults.withCredentials = true;
+import api from '../api';
 
 // Goal category icons
 const goalIcons = {
@@ -28,7 +25,7 @@ const Goals = () => {
     useEffect(() => {
         const fetchGoals = async () => {
             try {
-                const response = await axios.get(`${API_URL}/goals`);
+                const response = await api.get('/goals');
                 console.log('Goals fetched:', response.data);
                 setGoals(response.data);
                 if (response.data.length > 0) {
@@ -62,7 +59,7 @@ const Goals = () => {
             };
 
             console.log('Submitting goal:', goalData);
-            const response = await axios.post(`${API_URL}/goals`, goalData);
+            const response = await api.post('/goals', goalData);
             console.log('Goal created:', response.data);
             
             setGoals((previousGoals) => [response.data, ...previousGoals]);

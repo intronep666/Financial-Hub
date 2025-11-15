@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import axios from 'axios';
+import api from '../api';
 import { useNavigate } from 'react-router-dom';
 import {
     Chart as ChartJS,
@@ -118,9 +118,6 @@ ChartJS.register(
     ArcElement
 );
 
-const API_URL = process.env.REACT_APP_API_URL || 'http://localhost:8000';
-axios.defaults.withCredentials = true;
-
 const Dashboard = () => {
     const navigate = useNavigate();
     const [summary, setSummary] = useState(null);
@@ -138,7 +135,7 @@ const Dashboard = () => {
             
             try {
                 console.log('[API] Fetching financial summary...');
-                const response = await axios.get(`${API_URL}/summary`);
+                const response = await api.get('/summary');
                 console.log('[SUCCESS] Summary data received:', response.data);
                 setSummary(response.data);
                 

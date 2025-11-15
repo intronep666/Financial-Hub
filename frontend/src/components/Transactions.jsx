@@ -1,10 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import axios from 'axios';
-
-const API_URL = process.env.REACT_APP_API_URL || 'http://localhost:8000';
-
-// CRITICAL: Ensure credentials are included with all requests (httpOnly cookies)
-axios.defaults.withCredentials = true;
+import api from '../api';
+import { useTransactions, useCreateTransaction } from '../hooks/useTransactions';
 
 // Category icons mapping
 const categoryIcons = {
@@ -21,7 +17,8 @@ const categoryIcons = {
 };
 
 const Transactions = () => {
-    const [transactions, setTransactions] = useState([]);
+    const { data: transactions = [], isLoading: isTransactionsLoading, error: transactionsError } = useTransactions();
+    const { mutateAsync: createTransaction, isPending: isCreating } = useCreateTransaction();
     const [categories, setCategories] = useState([]);
     const [tags] = useState(['#groceries', '#transport', '#bills']);
     const [selectedTags, setSelectedTags] = useState([]);
@@ -34,23 +31,22 @@ const Transactions = () => {
         category_id: '',
         tags: ''
     });
+    const totalTransactions = transactions?.length || 0;
 
     useEffect(() => {
-        const fetchData = async () => {
+        const fetchCategories = async () => {
             try {
-                const transactionsRes = await axios.get(`${API_URL}/transactions`);
-                setTransactions(transactionsRes.data);
-
-                const categoriesRes = await axios.get(`${API_URL}/categories`);
+                const categoriesRes = await api.get('/categories');
                 setCategories(categoriesRes.data);
                 if (categoriesRes.data.length > 0) {
                     setForm(prevForm => ({ ...prevForm, category_id: categoriesRes.data[0].id }));
                 }
             } catch (error) {
-                console.error("Error fetching data:", error);
+                console.error('Error fetching categories:', error);
             }
         };
-        fetchData();
+
+        fetchCategories();
     }, []);
 
     // Removed interaction store usage
@@ -95,11 +91,8 @@ const Transactions = () => {
             };
 
             console.log('[REQUEST] Sending transaction data:', transactionData);
-            
-            const response = await axios.post(`${API_URL}/transactions`, transactionData);
-            console.log('[SUCCESS] Transaction created:', response.data);
-            
-            setTransactions([response.data, ...transactions]);
+            await createTransaction(transactionData);
+
             setForm({ 
                 description: '', 
                 amount: '', 
@@ -195,6 +188,15 @@ const Transactions = () => {
                     </button>
                 </div>
             </div>
+
+            {transactionsError && (
+                <div className="glass-card border border-danger/40 bg-danger/5 text-danger px-4 py-3">
+                    <p className="font-semibold">Failed to load transactions.</p>
+                    <p className="text-sm">
+                        {transactionsError.response?.data?.detail || transactionsError.message}
+                    </p>
+                </div>
+            )}
 
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
                 <div className="lg:col-span-1">
@@ -306,13 +308,14 @@ const Transactions = () => {
 
                             <button 
                                 type="submit"
-                                className={form.type === 'expense' ? 'btn-danger w-full' : 'btn-success w-full'}
+                                disabled={isCreating}
+                                className={`${form.type === 'expense' ? 'btn-danger w-full' : 'btn-success w-full'} ${isCreating ? 'opacity-70 cursor-not-allowed' : ''}`}
                             >
                                 <div className="flex items-center justify-center gap-2">
                                     <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
                                     </svg>
-                                    <span>Add Transaction</span>
+                                    <span>{isCreating ? 'Saving...' : 'Add Transaction'}</span>
                                 </div>
                             </button>
                         </form>
@@ -323,7 +326,12 @@ const Transactions = () => {
                     <div className="glass-card p-6">
                         <h3 className="text-xl font-bold text-text-primary mb-4">Recent Transactions</h3>
                         <div className="space-y-2">
-                            {transactions.length === 0 ? (
+                            {isTransactionsLoading ? (
+                                <div className="text-center py-12 text-text-muted">
+                                    <div className="w-12 h-12 border-4 border-primary border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
+                                    <p>Loading transactions...</p>
+                                </div>
+                            ) : totalTransactions === 0 ? (
                                 <div className="text-center py-12 text-text-muted">
                                     <svg className="w-16 h-16 mx-auto mb-4 opacity-50" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
@@ -376,7 +384,7 @@ const Transactions = () => {
                         <div className="flex items-center justify-between mb-6">
                             <div>
                                 <h2 className="text-2xl font-bold text-text-primary">Recent Transactions</h2>
-                                <p className="text-sm text-text-muted">{transactions.length} total transactions</p>
+                                <p className="text-sm text-text-muted">{totalTransactions} total transactions</p>
                             </div>
                             <div className="flex gap-2">
                                 <button className="px-4 py-2 rounded-lg bg-primary/20 text-primary text-sm font-medium">
@@ -388,7 +396,12 @@ const Transactions = () => {
                             </div>
                         </div>
 
-                        {transactions.length === 0 ? (
+                        {isTransactionsLoading ? (
+                            <div className="text-center py-12 text-text-muted">
+                                <div className="w-12 h-12 border-4 border-primary border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
+                                <p>Loading transactions...</p>
+                            </div>
+                        ) : totalTransactions === 0 ? (
                             <div className="text-center py-12">
                                 <svg className="w-16 h-16 mx-auto text-text-muted mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
