@@ -98,3 +98,16 @@ jspm_packages/
 # Temporary folders
 tmp/
 temp/
+
+# Virtual environments
+.venv/
+venv/
+ENV/
+env/
+
+# Test artifacts
+.pytest_cache/
+.coverage
+htmlcov/
+.tox/
+.nox/
