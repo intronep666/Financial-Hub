@@ -297,9 +297,9 @@ start-frontend.bat     # Starts frontend Vite dev server: `npm run dev -- --host
 
 Cross-platform alternatives are included for Unix/macOS and PowerShell workflows:
 
- - `start-dev.sh`: Bash script to start the backend with the same dev defaults and `SKIP_DB_INIT=true` to avoid DB initialization on import (good for fast iteration and CI runs).
+- `start-backend.sh`: Bash script to start the backend with the same dev defaults and `SKIP_DB_INIT=true` to avoid DB initialization on import (good for fast iteration and CI runs).
  - `start-celery.sh`: Start the Celery worker from a shell if Redis is available.
- - `start-dev.ps1`: PowerShell equivalent to `start-dev.sh` for consistent development on Windows PowerShell.
+- `start-backend.ps1`: PowerShell equivalent to `start-backend.sh` for consistent development on Windows PowerShell.
  - `start-frontend.sh`: Bash script to start the Vite dev server with a default `VITE_API_URL=http://localhost:8000`.
  - `start-frontend.ps1`: PowerShell equivalent to `start-frontend.sh`.
  - `start-all.sh`: Start backend, celery, and frontend in the background on macOS/Linux.

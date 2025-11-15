@@ -9,8 +9,8 @@ scripts/
 ├── dev/                    # Development start/stop scripts
 │   ├── start-all.ps1      # Start all services (PowerShell)
 │   ├── start-all.sh       # Start all services (Bash)
-│   ├── start-dev.ps1      # Start backend only (PowerShell)  
-│   ├── start-dev.sh       # Start backend only (Bash)
+│   ├── start-backend.ps1  # Start backend only (PowerShell)  
+│   ├── start-backend.sh   # Start backend only (Bash)
 │   ├── start-frontend.ps1 # Start frontend only (PowerShell)
 │   ├── start-frontend.sh  # Start frontend only (Bash)
 │   ├── start-celery.sh    # Start Celery worker (Bash)
@@ -52,7 +52,7 @@ You can also run scripts directly:
 ./scripts/dev/start-all.ps1        # Windows PowerShell
 
 # Start individual services
-./scripts/dev/start-dev.sh         # Backend only
+./scripts/dev/start-backend.sh     # Backend only
 ./scripts/dev/start-frontend.sh    # Frontend only
 ./scripts/dev/start-celery.sh      # Celery worker only
 

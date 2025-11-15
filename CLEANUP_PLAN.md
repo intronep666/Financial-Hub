@@ -154,7 +154,7 @@ dev.bat stop            # Stop all services
 **Direct script access:**
 ```bash
 ./scripts/dev/start-all.sh
-./scripts/dev/start-dev.ps1
+./scripts/dev/start-backend.ps1
 # etc.
 ```
 

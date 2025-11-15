@@ -7,7 +7,7 @@ PIDS_FILE="$PWD/dev-pids.txt"
 echo "Starting all services (backend, celery, frontend) in background..."
 
 # Bring up services in order: backend -> celery -> frontend
-./start-dev.sh &
+./start-backend.sh &
 PID_BACKEND=$!
 echo "Backend started (PID $PID_BACKEND)"
 

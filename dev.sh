@@ -32,7 +32,7 @@ case "${1:-help}" in
         ;;
     "backend")
         echo "🚀 Starting backend API server..."
-        "$SCRIPT_DIR/start-dev.sh"
+        "$SCRIPT_DIR/start-backend.sh"
         ;;
     "frontend")
         echo "🚀 Starting frontend development server..."

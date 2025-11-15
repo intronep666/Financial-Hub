@@ -163,7 +163,7 @@ Summary of verification and infrastructure improvements made in this branch, Nov
   - Added quick-run scripts and explicit dev+CI steps for maintainers.
   - `start-frontend.bat` now sets a local default `VITE_API_URL=http://localhost:8000` so the Vite dev server has a deterministic backend base if no `.env` variables are present.
     - Frontend runtime config: Added `frontend/public/env-config.js` default and `frontend/docker-entrypoint.sh` to inject `env-config.js` at container startup; `frontend/src/api.js` now will prefer `window.__RUNTIME_CONFIG__` for API base if present. This allows changing the backend URL at runtime without rebuilding the static assets.
-  - Added `start-dev.sh`, `start-celery.sh`, and `start-dev.ps1` cross-platform scripts for easier development on macOS/Linux and PowerShell. These scripts default to `SKIP_DB_INIT=true` for quicker imports and local iterations; see README for instructions on running migrations if required (e.g., `alembic upgrade head`).
+  - Added `start-backend.sh`, `start-celery.sh`, and `start-backend.ps1` cross-platform scripts for easier development on macOS/Linux and PowerShell. These scripts default to `SKIP_DB_INIT=true` for quicker imports and local iterations; see README for instructions on running migrations if required (e.g., `alembic upgrade head`).
 
 Notes:
 - The verification includes local unit test runs and CI run definitions; some checks (Docker Compose stack, Alembic migrations, Postgres matview) require Docker as well as proper environment variables (e.g., SENTRY_DSN, SECRET_KEY) and will fail if run on hosts missing Docker or Postgres.

@@ -17,7 +17,7 @@ goto end
 
 :backend
 echo 🚀 Starting backend API server...
-powershell.exe -ExecutionPolicy Bypass -File "%SCRIPT_DIR%\start-dev.ps1"
+powershell.exe -ExecutionPolicy Bypass -File "%SCRIPT_DIR%\start-backend.ps1"
 goto end
 
 :frontend

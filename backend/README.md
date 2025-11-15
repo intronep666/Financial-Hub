@@ -29,7 +29,7 @@ For convenience during local Windows development, a set of batch scripts are inc
  - `start-backend.bat`: Starts the backend server using the repo-level Python venv. The script sets dev env variables (SQLite dev mode, Redis/Celery defaults) and then runs Uvicorn. If you want to skip DB initialization for fast import/testing, set `SKIP_DB_INIT=true`.
  - `start-celery.bat`: Starts a Celery worker for background tasks (requires a running Redis instance).
  - `start-frontend.bat`: Starts the frontend Vite dev server (`npm run dev -- --host`).
- - `start-dev.sh` / `start-dev.ps1`: Cross-platform convenience scripts for Linux/macOS and PowerShell respectively. They use the same dev defaults but set `SKIP_DB_INIT=true` by default to avoid expensive DB operations during imports and to speed up iterative development. If you prefer the startup to create tables and run light migrations, set `SKIP_DB_INIT=false` or run `alembic upgrade head` manually.
+- `start-backend.sh` / `start-backend.ps1`: Cross-platform convenience scripts for Linux/macOS and PowerShell respectively. They use the same dev defaults but set `SKIP_DB_INIT=true` by default to avoid expensive DB operations during imports and to speed up iterative development. If you prefer the startup to create tables and run light migrations, set `SKIP_DB_INIT=false` or run `alembic upgrade head` manually.
 
 Use these scripts for easy local development on Windows. They are thin wrappers around existing commands and keep development workflow consistent with Linux/Mac instructions.
 
