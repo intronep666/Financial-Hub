@@ -1,7 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 
-const API_URL = 'http://localhost:8000';
+const API_URL = process.env.REACT_APP_API_URL || 'http://localhost:8000';
+
+// Configure axios to send cookies with requests
+axios.defaults.withCredentials = true;
 
 const Loans = () => {
     const [loans, setLoans] = useState([]);
@@ -13,21 +16,31 @@ const Loans = () => {
         date_taken: new Date().toISOString().slice(0, 10),
         source: ''
     });
-    const token = localStorage.getItem('token');
 
     useEffect(() => {
         const fetchLoans = async () => {
+            // Small delay to ensure auth cookie is set
+            await new Promise(resolve => setTimeout(resolve, 300));
+            
             try {
-                const response = await axios.get(`${API_URL}/loans`, {
-                    headers: { Authorization: `Bearer ${token}` }
-                });
+                const response = await axios.get(`${API_URL}/loans`);
+                console.log('Loans fetched:', response.data);
                 setLoans(response.data);
             } catch (error) {
                 console.error("Error fetching loans:", error);
+                console.error("Error details:", error.response);
+                
+                if (error.response?.status === 401) {
+                    alert('Your session has expired. Please log in again.');
+                    window.location.href = '/login';
+                } else {
+                    const errorMsg = error.response?.data?.detail || error.message || 'Unknown error';
+                    alert(`Error loading loans: ${errorMsg}\n\nCheck console for details.`);
+                }
             }
         };
         fetchLoans();
-    }, [token]);
+    }, []);
 
     const handleInputChange = (e) => {
         setForm({ ...form, [e.target.name]: e.target.value });
@@ -36,14 +49,63 @@ const Loans = () => {
     const handleSubmit = async (e) => {
         e.preventDefault();
         try {
-            const response = await axios.post(`${API_URL}/loans`, form, {
-                headers: { Authorization: `Bearer ${token}` }
-            });
+            // COMPREHENSIVE VALIDATION
+            if (!form.name.trim()) {
+                alert('Person/Source name is required');
+                return;
+            }
+            
+            if (!form.amount || parseFloat(form.amount) <= 0) {
+                alert('Amount must be a positive number');
+                return;
+            }
+            
+            const paid = parseFloat(form.paid || '0');
+            const amount = parseFloat(form.amount);
+            
+            if (paid < 0 || paid > amount) {
+                alert('Paid amount must be between 0 and total amount');
+                return;
+            }
+            
+            if (!form.date_taken) {
+                alert('Date is required');
+                return;
+            }
+
+            const loanData = {
+                name: form.name.trim(),
+                amount: amount,
+                paid: paid,
+                type: form.type,
+                date_taken: form.date_taken,
+                source: form.source || null
+            };
+
+            console.log('[REQUEST] Sending loan data:', loanData);
+            const response = await axios.post(`${API_URL}/loans`, loanData);
+            console.log('[SUCCESS] Loan created:', response.data);
+            
             setLoans([response.data, ...loans]);
             // Reset form
             setForm({ name: '', amount: '', paid: '0', type: 'borrowed', date_taken: new Date().toISOString().slice(0, 10), source: '' });
+            
+            alert('Loan added successfully!');
         } catch (error) {
-            console.error("Error adding loan:", error);
+            console.error("[ERROR] Failed to add loan:", error);
+            console.error("[DEBUG] Error response data:", error.response?.data);
+            console.error("[DEBUG] Error status:", error.response?.status);
+            
+            let errorMessage = 'Failed to add loan. Please try again.';
+            if (error.response?.data?.detail) {
+                const detail = error.response.data.detail;
+                errorMessage = typeof detail === 'string' 
+                    ? detail 
+                    : JSON.stringify(detail);
+            } else if (error.message) {
+                errorMessage = error.message;
+            }
+            alert(`Error: ${errorMessage}`);
         }
     };
 
@@ -52,7 +114,6 @@ const Loans = () => {
 
     return (
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-            {/* Add Loan Form */}
             <div className="lg:col-span-1">
                 <div className="bg-white p-6 rounded-lg shadow-md">
                     <h2 className="text-2xl font-bold text-gray-700 mb-4">Add Loan / Debt</h2>
@@ -81,14 +142,11 @@ const Loans = () => {
                 </div>
             </div>
 
-            {/* Loan Lists */}
             <div className="lg:col-span-2 space-y-8">
-                {/* Borrowed Loans */}
                 <div className="bg-white p-6 rounded-lg shadow-md">
                     <h2 className="text-2xl font-bold text-red-700 mb-4">Money You Owe</h2>
                     <LoanTable loans={borrowedLoans} />
                 </div>
-                {/* Lent Loans */}
                 <div className="bg-white p-6 rounded-lg shadow-md">
                     <h2 className="text-2xl font-bold text-green-700 mb-4">Money Owed to You</h2>
                     <LoanTable loans={lentLoans} />
