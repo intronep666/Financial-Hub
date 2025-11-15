@@ -1,6 +1,8 @@
 import axios from 'axios';
 
+const runtimeApiUrl = typeof window !== 'undefined' && window.__RUNTIME_CONFIG__?.VITE_API_URL;
 const API_BASE_URL =
+  runtimeApiUrl ||
   import.meta.env.VITE_API_URL ||
   import.meta.env.REACT_APP_API_URL ||
   'http://localhost:8000';
