@@ -1,38 +1,41 @@
+/* Main App Container - Neobank Theme */
 .App {
-  text-align: center;
+  min-height: 100vh;
+  background-color: #121217;
+  padding-top: 64px; /* Account for fixed navbar */
 }
 
-.App-logo {
-  height: 40vmin;
-  pointer-events: none;
+/* Page Content Wrapper */
+.page-content {
+  padding: 2rem;
+  max-width: 1400px;
+  margin: 0 auto;
 }
 
-@media (prefers-reduced-motion: no-preference) {
-  .App-logo {
-    animation: App-logo-spin infinite 20s linear;
+@media (max-width: 768px) {
+  .page-content {
+    padding: 1rem;
   }
 }
 
-.App-header {
-  background-color: #282c34;
-  min-height: 100vh;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  font-size: calc(10px + 2vmin);
-  color: white;
+/* Smooth Scrolling */
+html {
+  scroll-behavior: smooth;
 }
 
-.App-link {
-  color: #61dafb;
-}
-
-@keyframes App-logo-spin {
+/* Custom Animations */
+@keyframes fadeIn {
   from {
-    transform: rotate(0deg);
+    opacity: 0;
+    transform: translateY(20px);
   }
   to {
-    transform: rotate(360deg);
+    opacity: 1;
+    transform: translateY(0);
   }
 }
+
+.fade-in {
+  animation: fadeIn 0.5s ease-out;
+}
+

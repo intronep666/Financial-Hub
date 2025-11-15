@@ -1,6 +1,7 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo, useCallback } from 'react';
 import api from '../api';
 import { useTransactions, useCreateTransaction } from '../hooks/useTransactions';
+import TransactionsList from './TransactionsList';
 
 // Category icons mapping
 const categoryIcons = {
@@ -14,6 +15,10 @@ const categoryIcons = {
     'Salary': '💰',
     'Investment': '📈',
     'Other': '📦'
+};
+
+const getCategoryIcon = (categoryName) => {
+    return categoryIcons[categoryName] || categoryIcons['Other'];
 };
 
 const Transactions = () => {
@@ -31,7 +36,114 @@ const Transactions = () => {
         category_id: '',
         tags: ''
     });
-    const totalTransactions = transactions?.length || 0;
+    const filteredTransactions = useMemo(() => {
+        if (!transactions?.length) {
+            return [];
+        }
+
+        if (!selectedTags.length) {
+            return transactions;
+        }
+
+        return transactions.filter(transaction => {
+            if (!transaction.tags) return false;
+            const transactionTags = transaction.tags.split(' ').filter(Boolean);
+            return selectedTags.some(tag => transactionTags.includes(tag));
+        });
+    }, [transactions, selectedTags]);
+
+    const totalTransactions = filteredTransactions.length;
+    const summaryEmptyState = (
+        <div className="text-center py-12 text-text-muted">
+            <svg className="w-16 h-16 mx-auto mb-4 opacity-50" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+            </svg>
+            <p>No transactions yet</p>
+            <p className="text-sm">Add your first transaction to get started</p>
+        </div>
+    );
+
+    const mainEmptyState = (
+        <div className="text-center py-12">
+            <svg className="w-16 h-16 mx-auto text-text-muted mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
+            </svg>
+            <p className="text-text-muted">No transactions yet. Add your first one!</p>
+        </div>
+    );
+
+    const renderSummaryTransaction = useCallback((transaction) => (
+        <div className="transaction-item h-full">
+            <div className="flex items-center justify-between p-4">
+                <div className="flex items-center gap-4">
+                    <div className={`w-12 h-12 rounded-xl flex items-center justify-center text-xl ${
+                        transaction.type === 'income' ? 'bg-success/20' : 'bg-danger/20'
+                    }`}>
+                        {getCategoryIcon(transaction.category?.name || 'Other')}
+                    </div>
+                    <div>
+                        <h4 className="font-medium text-text-primary">{transaction.description}</h4>
+                        <p className="text-sm text-text-secondary">
+                            {transaction.category?.name || 'Uncategorized'} •
+                            {new Date(transaction.date).toLocaleDateString()}
+                        </p>
+                        {transaction.tags && (
+                            <div className="flex gap-1 mt-1">
+                                {transaction.tags.split(' ').filter(tag => tag).map((tag, i) => (
+                                    <span key={i} className="text-xs bg-primary/20 text-primary px-2 py-1 rounded">
+                                        {tag}
+                                    </span>
+                                ))}
+                            </div>
+                        )}
+                    </div>
+                </div>
+                <div className={`text-right ${transaction.type === 'income' ? 'text-success' : 'text-danger'}`}>
+                    <p className="font-semibold tabular-nums">
+                        {transaction.type === 'income' ? '+' : '-'}₹{Math.abs(Number(transaction.amount || 0)).toFixed(2)}
+                    </p>
+                </div>
+            </div>
+        </div>
+    ), []);
+
+    const renderDetailedTransaction = useCallback((transaction) => (
+        <div className="transaction-item h-full">
+            <div className="flex items-center gap-4 flex-1">
+                <div className={`transaction-icon ${
+                    transaction.type === 'income' 
+                        ? 'bg-success/20 text-success' 
+                        : 'bg-danger/20 text-danger'
+                }`}>
+                    {getCategoryIcon(transaction.category?.name || 'Other')}
+                </div>
+
+                <div className="flex-1 min-w-0">
+                    <p className="font-semibold text-text-primary truncate">
+                        {transaction.description}
+                    </p>
+                    <div className="flex items-center gap-2 mt-1">
+                        <span className="badge badge-primary text-xs">
+                            {transaction.category?.name || 'Uncategorized'}
+                        </span>
+                        <span className="text-xs text-text-muted">
+                            {new Date(transaction.date).toLocaleDateString('en-US', { 
+                                month: 'short', 
+                                day: 'numeric',
+                                year: 'numeric'
+                            })}
+                        </span>
+                    </div>
+                </div>
+
+                <div className="text-right">
+                    <p className={transaction.type === 'income' ? 'transaction-amount-positive' : 'transaction-amount-negative'}>
+                        {transaction.type === 'income' ? '+' : '-'}₹{Number(transaction.amount || 0).toFixed(2)}
+                    </p>
+                </div>
+            </div>
+        </div>
+    ), []);
 
     useEffect(() => {
         const fetchCategories = async () => {
@@ -156,10 +268,6 @@ const Transactions = () => {
 
     const removeTag = (tag) => {
         setSelectedTags(selectedTags.filter(t => t !== tag));
-    };
-
-    const getCategoryIcon = (categoryName) => {
-        return categoryIcons[categoryName] || categoryIcons['Other'];
     };
 
     return (
@@ -331,49 +439,14 @@ const Transactions = () => {
                                     <div className="w-12 h-12 border-4 border-primary border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
                                     <p>Loading transactions...</p>
                                 </div>
-                            ) : totalTransactions === 0 ? (
-                                <div className="text-center py-12 text-text-muted">
-                                    <svg className="w-16 h-16 mx-auto mb-4 opacity-50" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-                                    </svg>
-                                    <p>No transactions yet</p>
-                                    <p className="text-sm">Add your first transaction to get started</p>
-                                </div>
                             ) : (
-                                transactions.map((transaction, index) => (
-                                    <div key={transaction.id || index} className="transaction-item">
-                                        <div className="flex items-center justify-between p-4">
-                                            <div className="flex items-center gap-4">
-                                                <div className={`w-12 h-12 rounded-xl flex items-center justify-center text-xl ${
-                                                    transaction.type === 'income' ? 'bg-success/20' : 'bg-danger/20'
-                                                }`}>
-                                                    {getCategoryIcon(transaction.category?.name || 'Other')}
-                                                </div>
-                                                <div>
-                                                    <h4 className="font-medium text-text-primary">{transaction.description}</h4>
-                                                    <p className="text-sm text-text-secondary">
-                                                        {transaction.category?.name || 'Uncategorized'} • 
-                                                        {new Date(transaction.date).toLocaleDateString()}
-                                                    </p>
-                                                    {transaction.tags && (
-                                                        <div className="flex gap-1 mt-1">
-                                                            {transaction.tags.split(' ').filter(tag => tag).map((tag, i) => (
-                                                                <span key={i} className="text-xs bg-primary/20 text-primary px-2 py-1 rounded">
-                                                                    {tag}
-                                                                </span>
-                                                            ))}
-                                                        </div>
-                                                    )}
-                                                </div>
-                                            </div>
-                                            <div className={`text-right ${transaction.type === 'income' ? 'text-success' : 'text-danger'}`}>
-                                                <p className="font-semibold tabular-nums">
-                                                    {transaction.type === 'income' ? '+' : '-'}₹{Math.abs(transaction.amount).toFixed(2)}
-                                                </p>
-                                            </div>
-                                        </div>
-                                    </div>
-                                ))
+                                <TransactionsList
+                                    transactions={filteredTransactions}
+                                    renderItem={renderSummaryTransaction}
+                                    emptyState={summaryEmptyState}
+                                    itemSize={124}
+                                    height={396}
+                                />
                             )}
                         </div>
                     </div>
@@ -401,56 +474,14 @@ const Transactions = () => {
                                 <div className="w-12 h-12 border-4 border-primary border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
                                 <p>Loading transactions...</p>
                             </div>
-                        ) : totalTransactions === 0 ? (
-                            <div className="text-center py-12">
-                                <svg className="w-16 h-16 mx-auto text-text-muted mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
-                                </svg>
-                                <p className="text-text-muted">No transactions yet. Add your first one!</p>
-                            </div>
                         ) : (
-                            <div className="space-y-3">
-                                {transactions.map(t => (
-                                        <div
-                                            key={t.id}
-                                            className="transaction-item"
-                                        >
-                                            <div className="flex items-center gap-4 flex-1">
-                                                <div className={`transaction-icon ${
-                                                    t.type === 'income' 
-                                                        ? 'bg-success/20 text-success' 
-                                                        : 'bg-danger/20 text-danger'
-                                                }`}>
-                                                    {getCategoryIcon(t.category.name)}
-                                                </div>
-
-                                                <div className="flex-1 min-w-0">
-                                                    <p className="font-semibold text-text-primary truncate">
-                                                        {t.description}
-                                                    </p>
-                                                    <div className="flex items-center gap-2 mt-1">
-                                                        <span className="badge badge-primary text-xs">
-                                                            {t.category.name}
-                                                        </span>
-                                                        <span className="text-xs text-text-muted">
-                                                            {new Date(t.date).toLocaleDateString('en-US', { 
-                                                                month: 'short', 
-                                                                day: 'numeric',
-                                                                year: 'numeric'
-                                                            })}
-                                                        </span>
-                                                    </div>
-                                                </div>
-
-                                                <div className="text-right">
-                                                    <p className={t.type === 'income' ? 'transaction-amount-positive' : 'transaction-amount-negative'}>
-                                                        {t.type === 'income' ? '+' : '-'}₹{t.amount.toFixed(2)}
-                                                    </p>
-                                                </div>
-                                            </div>
-                                        </div>
-                                ))}
-                            </div>
+                            <TransactionsList
+                                transactions={filteredTransactions}
+                                renderItem={renderDetailedTransaction}
+                                emptyState={mainEmptyState}
+                                itemSize={118}
+                                height={520}
+                            />
                         )}
                     </div>
                 </div>

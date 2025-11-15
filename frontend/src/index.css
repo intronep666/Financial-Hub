@@ -1,3 +1,332 @@
+/* Import Inter Font from Google Fonts */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600&display=swap');
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+/* ============================================
+   NEOBANK GLOBAL THEME - Deep Sapphire/Graphite
+   ============================================ */
+
+:root {
+  /* Canvas Colors */
+  --canvas: #121217;
+  --canvas-light: #1a1a24;
+  --canvas-lighter: #242430;
+  
+  /* Primary Electric Cyan */
+  --primary: #1D7AF3;
+  --primary-light: #4B96FF;
+  --primary-dark: #0D5AC2;
+  --primary-glow: rgba(29, 122, 243, 0.3);
+  
+  /* Success Emerald Green */
+  --success: #04AA6D;
+  --success-light: #06D689;
+  --success-dark: #038A57;
+  --success-glow: rgba(4, 170, 109, 0.2);
+  
+  /* Danger Ruby Red */
+  --danger: #FF4500;
+  --danger-light: #FF6A33;
+  --danger-dark: #CC3700;
+  --danger-glow: rgba(255, 69, 0, 0.2);
+  
+  /* Warning */
+  --warning: #FFB800;
+  --warning-light: #FFCA3D;
+  
+  /* Text */
+  --text-primary: #F8F9FA;
+  --text-secondary: #B8BCBF;
+  --text-muted: #6C757D;
+  
+  /* Glass Effects */
+  --glass: rgba(255, 255, 255, 0.05);
+  --glass-light: rgba(255, 255, 255, 0.1);
+  --glass-dark: rgba(0, 0, 0, 0.3);
+}
+
+@layer base {
+  * {
+    @apply border-gray-800;
+  }
+  
+  html {
+    scroll-behavior: smooth;
+  }
+  
+  body {
+    @apply bg-canvas text-text-primary font-sans antialiased;
+    font-feature-settings: 'tnum' on, 'lnum' on; /* Tabular lining figures */
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+  
+  /* Tabular Numbers for All Financial Data */
+  .financial,
+  .amount,
+  .currency,
+  [data-numeric="true"] {
+    font-variant-numeric: tabular-nums lining-nums;
+    font-feature-settings: 'tnum', 'lnum';
+    font-family: 'JetBrains Mono', 'Inter', monospace;
+    letter-spacing: -0.02em;
+  }
+  
+  /* Headings */
+  h1, h2, h3, h4, h5, h6 {
+    @apply font-semibold text-text-primary;
+  }
+  
+  h1 { @apply text-4xl md:text-5xl; }
+  h2 { @apply text-3xl md:text-4xl; }
+  h3 { @apply text-2xl md:text-3xl; }
+  h4 { @apply text-xl md:text-2xl; }
+  h5 { @apply text-lg md:text-xl; }
+  h6 { @apply text-base md:text-lg; }
+}
+
+@layer components {
+  /* ============================================
+     GLASSMORPHISM CARDS
+     ============================================ */
+  .glass-card {
+    @apply bg-glass backdrop-blur-md border border-glass-light rounded-2xl;
+    box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.37);
+  }
+  
+  .glass-card-hover {
+    @apply glass-card transition-all duration-300 hover:bg-glass-light hover:shadow-elevated;
+  }
+  
+  /* ============================================
+     BUTTONS - Neobank Style
+     ============================================ */
+  .btn {
+    @apply px-6 py-3 rounded-xl font-semibold transition-all duration-300 
+           focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-canvas
+           disabled:opacity-50 disabled:cursor-not-allowed;
+  }
+  
+  .btn-primary {
+    @apply btn bg-gradient-primary text-white shadow-glow-primary
+      hover:shadow-glow-primary hover:scale-105 active:scale-95;
+  }
+  
+  .btn-success {
+    @apply btn bg-gradient-success text-white shadow-glow-success
+      hover:shadow-glow-success hover:scale-105 active:scale-95;
+  }
+  
+  .btn-danger {
+    @apply btn bg-gradient-danger text-white shadow-glow-danger
+      hover:shadow-glow-danger hover:scale-105 active:scale-95;
+  }
+  
+  .btn-glass {
+    @apply btn glass-card text-text-primary hover:bg-glass-light;
+  }
+  
+  .btn-outline {
+    @apply btn border-2 border-primary text-primary bg-transparent
+           hover:bg-primary hover:text-white;
+  }
+  
+  /* ============================================
+     INPUTS - Modern Financial Style
+     ============================================ */
+  .input {
+    @apply w-full px-4 py-3 rounded-xl bg-canvas-light border border-glass-light
+           text-text-primary placeholder-text-muted
+           focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent
+           transition-all duration-300;
+  }
+  
+  .input-financial {
+    @apply input font-mono tabular-nums text-right;
+  }
+  
+  /* ============================================
+     BADGE & TAG SYSTEM
+     ============================================ */
+  .badge {
+    @apply px-3 py-1 rounded-full text-sm font-medium inline-flex items-center gap-1;
+  }
+  
+  .badge-success {
+    @apply badge bg-success/20 text-success-light border border-success/30;
+  }
+  
+  .badge-danger {
+    @apply badge bg-danger/20 text-danger-light border border-danger/30;
+  }
+  
+  .badge-warning {
+    @apply badge bg-warning/20 text-warning-light border border-warning/30;
+  }
+  
+  .badge-primary {
+    @apply badge bg-primary/20 text-primary-light border border-primary/30;
+  }
+  
+  /* Pill-Shaped Tag Chips */
+  .tag-chip {
+    @apply inline-flex items-center gap-2 px-3 py-1.5 rounded-full
+           bg-gradient-to-r from-primary/20 to-primary/10
+           border border-primary/30 text-primary-light text-sm font-medium
+           transition-all duration-300 hover:from-primary/30 hover:to-primary/20
+           cursor-pointer;
+  }
+  
+  .tag-chip-remove {
+    @apply ml-1 text-danger hover:text-danger-light transition-colors cursor-pointer;
+  }
+  
+  /* ============================================
+     DATA VISUALIZATION UTILITIES
+     ============================================ */
+  .progress-bar {
+    @apply relative h-3 bg-canvas-lighter rounded-full overflow-hidden;
+  }
+  
+  .progress-fill {
+    @apply absolute top-0 left-0 h-full transition-all duration-500 ease-out rounded-full;
+  }
+  
+  .progress-fill-success {
+    @apply progress-fill bg-gradient-success;
+  }
+  
+  .progress-fill-danger {
+    @apply progress-fill bg-gradient-danger;
+  }
+  
+  .progress-fill-primary {
+    @apply progress-fill bg-gradient-primary;
+  }
+  
+  /* Predictive Overlay for Goals */
+  .progress-forecast {
+    @apply absolute top-0 left-0 h-full opacity-40 rounded-full;
+  }
+  
+  /* ============================================
+     NOTIFICATION CARDS
+     ============================================ */
+  .alert-card {
+    @apply p-4 rounded-xl border-l-4 glass-card animate-slide-up;
+  }
+  
+  .alert-success {
+    @apply alert-card border-success bg-success/10;
+  }
+  
+  .alert-danger {
+    @apply alert-card border-danger bg-danger/10;
+  }
+  
+  .alert-warning {
+    @apply alert-card border-warning bg-warning/10;
+  }
+  
+  .alert-info {
+    @apply alert-card border-primary bg-primary/10;
+  }
+  
+  /* ============================================
+     FLOATING ACTION BUTTON (FAB)
+     ============================================ */
+  .fab {
+    @apply fixed bottom-8 right-8 w-16 h-16 rounded-full
+           bg-gradient-primary shadow-glow-primary
+           flex items-center justify-center
+           text-white text-2xl cursor-pointer
+           transition-all duration-300
+           hover:scale-110 hover:shadow-elevated
+           active:scale-95 z-50;
+    animation: glow 2s ease-in-out infinite alternate;
+  }
+  
+  /* ============================================
+     TRANSACTION LIST STYLING
+     ============================================ */
+  .transaction-item {
+    @apply flex items-center justify-between p-4 rounded-xl
+           glass-card-hover cursor-pointer;
+  }
+  
+  .transaction-icon {
+    @apply w-12 h-12 rounded-full flex items-center justify-center text-xl;
+  }
+  
+  .transaction-amount {
+    @apply font-mono tabular-nums font-semibold text-lg;
+  }
+  
+  .transaction-amount-positive {
+    @apply transaction-amount text-success;
+  }
+  
+  .transaction-amount-negative {
+    @apply transaction-amount text-danger;
+  }
+}
+
+@layer utilities {
+  /* Tabular Numbers Utility */
+  .tabular-nums {
+    font-variant-numeric: tabular-nums lining-nums;
+    font-feature-settings: 'tnum', 'lnum';
+  }
+  
+  /* Glassmorphism Utilities */
+  .glass-bg {
+    background: rgba(255, 255, 255, 0.05);
+    backdrop-filter: blur(10px);
+  }
+  
+  .glass-bg-light {
+    background: rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(10px);
+  }
+  
+  /* Gradient Text */
+  .text-gradient-primary {
+    @apply bg-gradient-primary bg-clip-text text-transparent;
+  }
+  
+  .text-gradient-success {
+    @apply bg-gradient-success bg-clip-text text-transparent;
+  }
+  
+  /* Scrollbar Styling */
+  .custom-scrollbar::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+  }
+  
+  .custom-scrollbar::-webkit-scrollbar-track {
+    @apply bg-canvas-light rounded-full;
+  }
+  
+  .custom-scrollbar::-webkit-scrollbar-thumb {
+    @apply bg-primary/50 rounded-full hover:bg-primary;
+  }
+  
+  /* Animation Utilities */
+  .animate-glow {
+    animation: glow 2s ease-in-out infinite alternate;
+  }
+}
+
+/* ============================================
+   RESPONSIVE DESIGN
+   ============================================ */
+@media (max-width: 768px) {
+  .fab {
+    @apply bottom-6 right-6 w-14 h-14 text-xl;
+  }
+}
