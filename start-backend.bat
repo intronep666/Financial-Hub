@@ -4,7 +4,8 @@ REM Development environment variables
 set USE_SQLITE=true
 set DEBUG=true
 set COOKIE_SECURE=false
-set SKIP_DB_INIT=false
+REM Default to skipping DB init for faster dev imports; set SKIP_DB_INIT=false to run migrations on start
+set SKIP_DB_INIT=true
 set REDIS_URL=redis://localhost:6379/0
 set CELERY_BROKER_URL=%REDIS_URL%
 set CELERY_RESULT_BACKEND=redis://localhost:6379/1

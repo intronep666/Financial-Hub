@@ -293,6 +293,15 @@ start-celery.bat       # Starts Celery worker for background tasks (optional)
 start-frontend.bat     # Starts frontend Vite dev server: `npm run dev -- --host`
 ```
 
+Cross-platform alternatives are included for Unix/macOS and PowerShell workflows:
+
+ - `start-dev.sh`: Bash script to start the backend with the same dev defaults and `SKIP_DB_INIT=true` to avoid DB initialization on import (good for fast iteration and CI runs).
+ - `start-celery.sh`: Start the Celery worker from a shell if Redis is available.
+ - `start-dev.ps1`: PowerShell equivalent to `start-dev.sh` for consistent development on Windows PowerShell.
+
+By default the local dev start scripts set `SKIP_DB_INIT=true` to reduce accidental database operations on import; if you want the startup to create tables and run the light migrations, set `SKIP_DB_INIT=false` before starting the backend or run `alembic upgrade head` manually.
+```
+
 ```
 
 ## 🚀 Getting Started

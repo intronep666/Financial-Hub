@@ -161,6 +161,8 @@ Summary of verification and infrastructure improvements made in this branch, Nov
 - Documentation & developer UX:
   - Updated README and backend README to point to `.env.production.example` and to recommend the `financial_hub` DB name across config files.
   - Added quick-run scripts and explicit dev+CI steps for maintainers.
+  - `start-frontend.bat` now sets a local default `VITE_API_URL=http://localhost:8000` so the Vite dev server has a deterministic backend base if no `.env` variables are present.
+  - Added `start-dev.sh`, `start-celery.sh`, and `start-dev.ps1` cross-platform scripts for easier development on macOS/Linux and PowerShell. These scripts default to `SKIP_DB_INIT=true` for quicker imports and local iterations; see README for instructions on running migrations if required (e.g., `alembic upgrade head`).
 
 Notes:
 - The verification includes local unit test runs and CI run definitions; some checks (Docker Compose stack, Alembic migrations, Postgres matview) require Docker as well as proper environment variables (e.g., SENTRY_DSN, SECRET_KEY) and will fail if run on hosts missing Docker or Postgres.
