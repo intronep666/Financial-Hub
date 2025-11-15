@@ -31,6 +31,8 @@ Spin up PostgreSQL, Redis, the FastAPI backend, Celery worker, frontend (Nginx),
 docker compose up --build
 
 Note: The frontend build uses Vite env variables (VITE_API_URL/REACT_APP_API_URL) that are passed to the build via Docker build args in `docker-compose.yml`. By default the Compose file points the frontend at `http://backend:8000` when built.
+
+Runtime configuration: The frontend container now generates a small `env-config.js` at startup using a `VITE_API_URL` environment variable (via a docker entrypoint), so you can change the API host at runtime without rebuilding the image. The static build also provides a default `env-config.js` for local development.
 ```
 
 - Backend API: http://localhost:8000
